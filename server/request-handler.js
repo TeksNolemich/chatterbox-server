@@ -68,20 +68,31 @@ exports.requestHandler = function(request, response) {
 
 
   if (request.method === "GET" && request.url === '/classes/messages') {
-    response.end(JSON.stringify(storage));
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(storage))
+
   } else if (request.method === "POST" && request.url === '/classes/messages') {
     statusCode = 201;
-    let body = [];
-    request.on('data', (chunk) => {body.push(chunk)}).on('end', () => {body = Buffer.concat(body).toString()});
-    console.log(body, "  body up")
-    storage.results.push(body);
+    var data = [];
     response.writeHead(statusCode, headers);
+
+    request.on('data', function(chunk) {
+      data.push(chunk);
+    })
+
+    request.on('end', function() {
+      data = Buffer.concat(data).toString();
+      data = JSON.parse(data);
+      storage.results.push(data);
+      response.end(JSON.stringify(storage));
+    })
+    
   } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);
     response.end('Not Found');
   }
-  response.end('Hello, World!');
+  // response.end('Hello, World!');
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
