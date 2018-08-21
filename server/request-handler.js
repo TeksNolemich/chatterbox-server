@@ -66,10 +66,13 @@ exports.requestHandler = function(request, response) {
 
   // }
 
-
+  if(request.method === 'OPTIONS' && request.url === '/classes/messages') {
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(storage));
+  }
   if (request.method === "GET" && request.url === '/classes/messages') {
     response.writeHead(statusCode, headers);
-    response.end(JSON.stringify(storage))
+    response.end(JSON.stringify(storage));
 
   } else if (request.method === "POST" && request.url === '/classes/messages') {
     statusCode = 201;
