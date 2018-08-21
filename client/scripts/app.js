@@ -63,8 +63,10 @@ var app = {
 
       success: function(data) {
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
 
+        data = JSON.parse(data);
+        if (!data.results || !data.results.length) { return; }
+        console.log('after if')
         // Store messages for caching later
         app.messages = data.results;
 
