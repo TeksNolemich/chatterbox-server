@@ -12,8 +12,10 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var storage = {};
-storage.results = [];
+var storage = {
+  results: []
+};
+// storage.results = [];
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -59,17 +61,25 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
- 
 
-  if(request.url === '/classes/messages'){
-    if(request.method === "GET"){
-      response.end(JSON.stringify(storage));
-    } else if (request.method === "POST") {
-      return storage;
-    }
+  // if (request.url !== '/classes/messages') {
+
+  // }
+
+
+  if (request.method === "GET" && request.url === '/classes/messages') {
+    response.end(JSON.stringify(storage));
+  } else if (request.method === "POST" && request.url === '/classes/messages') {
+    statusCode = 201;
+    let body = [];
+    request.on('data', (chunk) => {body.push(chunk)}).on('end', () => {body = Buffer.concat(body).toString()});
+    console.log(body, "  body up")
+    storage.results.push(body);
+    response.writeHead(statusCode, headers);
   } else {
-      statusCode = 404;
-      response.write(statusCode, headers);
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end('Not Found');
   }
   response.end('Hello, World!');
 };
